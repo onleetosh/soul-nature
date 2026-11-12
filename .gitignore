@@ -21,6 +21,7 @@ node_modules/
 out/
 dist/
 npm-debug.log*
+*.tsbuildinfo
 
 # Editor and operating-system files
 .DS_Store
