@@ -131,8 +131,13 @@ def create_order(
                 quantity=line.quantity,
             )
         )
-        if status == OrderStatus.paid and line.product is not None:
-            # Decrement in SQL so concurrent fulfillments don't overwrite each other.
+
+    if status == OrderStatus.paid:
+        # Decrement in SQL, in product-id order, so concurrent fulfillments neither overwrite
+        # each other nor deadlock on the row locks.
+        for line in sorted(quote.lines, key=lambda line: line.product_id):
+            if line.product is None:
+                continue
             session.exec(
                 update(Product)
                 .where(col(Product.id) == line.product_id)
