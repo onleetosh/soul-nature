@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { ChevronLeftIcon, LeafIcon, TruckIcon } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
+import { AddToCart } from "@/components/cart/add-to-cart";
 import { Separator } from "@/components/ui/separator";
 import { ProductImage } from "@/components/product/product-image";
 import { ApiError, getProductBySlug } from "@/lib/api";
@@ -61,6 +62,7 @@ async function ProductDetail({ params }: { params: PageProps<"/products/[slug]">
           </div>
         </div>
         <p className="leading-relaxed text-muted-foreground">{product.description}</p>
+        <AddToCart product={product} />
         <Separator />
         {product.ingredients && (
           <div className="space-y-2">

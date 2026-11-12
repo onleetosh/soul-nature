@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { CartButton } from "@/components/cart/cart-button";
 import { Logo } from "@/components/layout/logo";
 import { MobileNav } from "@/components/layout/mobile-nav";
 import { siteConfig } from "@/lib/site";
@@ -24,7 +25,9 @@ export function SiteHeader() {
             </Link>
           ))}
         </nav>
-        <div className="ml-auto flex items-center gap-1" />
+        <div className="ml-auto flex items-center gap-1">
+          <CartButton />
+        </div>
       </div>
     </header>
   );
