@@ -12,6 +12,35 @@ personal-care, fragrance, and wellness products.
 The backend currently provides health, category, product, and order endpoints.
 The static storefront is not yet connected to the API.
 
+## Admin API
+
+The admin API uses a single shared bearer token. Before starting the backend,
+generate a long random token and set it in the server's environment:
+
+```powershell
+$env:ADMIN_API_TOKEN = .\.venv\Scripts\python.exe -c "import secrets; print(secrets.token_urlsafe(32))"
+```
+
+Run this from `backend/`. Keep the token secret; do not commit it, put it in
+frontend source code, or expose it in browser-delivered configuration.
+All `/api/v1/admin` endpoints require an `Authorization: Bearer <token>`
+header. An unset, non-ASCII, or shorter-than-32-character token disables the
+admin API with a 503 response. Use a newly generated token whenever rotation is
+needed. This shared-token mechanism is intended for development and trusted
+administrators; it does not provide user accounts, individual access control,
+rate limiting, or audit logging. Use HTTPS and a secure authentication
+solution before production deployment.
+
+- `GET /api/v1/admin/products` and `GET /api/v1/admin/products/{id}` include
+  inactive products.
+- `POST /api/v1/admin/products` creates a product; `PUT /api/v1/admin/products/{id}`
+  replaces its fields. See `/docs` for the request schema. Category IDs come
+  from `GET /api/v1/categories`.
+- `DELETE /api/v1/admin/products/{id}` deactivates the product, preserving
+  order history; set `is_active` to `true` via `PUT` to restore it.
+- `GET /api/v1/admin/orders` lists orders, newest first, including their items.
+  Both admin lists accept `limit` (1–100, default 20) and `offset` (default 0).
+
 The test-mode checkout endpoint, `POST /api/v1/checkout/sessions`, accepts an
 order's `email` and `order_number` and returns a Stripe-hosted `checkout_url`.
 It uses the order's stored prices. Configure the following environment
