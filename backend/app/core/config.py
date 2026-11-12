@@ -1,5 +1,6 @@
 from functools import lru_cache
 
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -20,6 +21,15 @@ class Settings(BaseSettings):
     stripe_webhook_secret: str = ""
 
     admin_token: str = ""
+
+    @field_validator("database_url")
+    @classmethod
+    def use_psycopg_driver(cls, url: str) -> str:
+        # Hosts such as Render hand out plain postgres:// URLs; we ship the psycopg 3 driver.
+        for prefix in ("postgres://", "postgresql://"):
+            if url.startswith(prefix):
+                return "postgresql+psycopg://" + url[len(prefix):]
+        return url
 
 
 @lru_cache
