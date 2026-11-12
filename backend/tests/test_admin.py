@@ -76,3 +76,11 @@ def test_list_and_update_orders(client, seeded):
     assert res.json()["status"] == "shipped"
     shipped = client.get("/api/admin/orders", params={"status": "shipped"}, headers=AUTH).json()
     assert shipped["total"] == 1
+
+
+def test_update_rejects_null_for_required_fields(client, seeded):
+    product_id = client.get("/api/admin/products", headers=AUTH).json()[0]["id"]
+    res = client.patch(f"/api/admin/products/{product_id}", json={"stock": None}, headers=AUTH)
+    assert res.status_code == 422
+    res = client.patch(f"/api/admin/products/{product_id}", json={"image_url": None}, headers=AUTH)
+    assert res.status_code == 200

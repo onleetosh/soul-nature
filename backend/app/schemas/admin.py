@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 from app.models import OrderStatus
 from app.schemas.order import OrderRead
@@ -32,6 +32,13 @@ class ProductUpdate(BaseModel):
     is_active: bool | None = None
     is_featured: bool | None = None
     category_id: int | None = None
+
+    @model_validator(mode="after")
+    def _reject_null_required_fields(self):
+        nulls = sorted(f for f in self.model_fields_set if f != "image_url" and getattr(self, f) is None)
+        if nulls:
+            raise ValueError(f"Fields cannot be null: {', '.join(nulls)}")
+        return self
 
 
 class OrderStatusUpdate(BaseModel):
