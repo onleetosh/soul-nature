@@ -24,7 +24,7 @@ E-commerce storefront for **Soul of Nature**, a Black-owned wellness and men's g
 
 ## Quick start
 
-With `make` (macOS/Linux):
+With `make` (macOS/Linux, or Windows with Git Bash/WSL and GNU Make, e.g. `winget install ezwinports.make`; Docker Desktop must be running):
 
 ```bash
 git clone https://github.com/onleetosh/soul-nature.git
