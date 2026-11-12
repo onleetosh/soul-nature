@@ -56,11 +56,15 @@ export const adminApi = {
   updateProduct: (token: string, id: number, body: Partial<ProductInput>) =>
     adminFetch<Product>(token, `/products/${id}`, { method: "PATCH", body: JSON.stringify(body) }),
   deleteProduct: (token: string, id: number) => adminFetch<void>(token, `/products/${id}`, { method: "DELETE" }),
-  listOrders: (token: string, params: { status?: OrderStatus; q?: string; limit?: number } = {}) => {
+  listOrders: (
+    token: string,
+    params: { status?: OrderStatus; q?: string; limit?: number; offset?: number } = {},
+  ) => {
     const search = new URLSearchParams();
     if (params.status) search.set("status", params.status);
     if (params.q) search.set("q", params.q);
     search.set("limit", String(params.limit ?? 100));
+    if (params.offset) search.set("offset", String(params.offset));
     return adminFetch<{ items: Order[]; total: number }>(token, `/orders?${search}`);
   },
   updateOrderStatus: (token: string, id: number, status: OrderStatus) =>

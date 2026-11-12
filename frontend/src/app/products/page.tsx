@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { SearchIcon } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ProductGrid, ProductGridSkeleton } from "@/components/product/product-card";
 import { SortSelect } from "@/components/product/sort-select";
@@ -15,6 +16,8 @@ export const metadata: Metadata = {
 };
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
+
+const PAGE_SIZE = 24;
 
 function first(value: string | string[] | undefined) {
   return Array.isArray(value) ? value[0] : value;
@@ -58,7 +61,17 @@ async function SearchBox({ searchParams }: { searchParams: SearchParams }) {
 async function ProductResults({ searchParams }: { searchParams: SearchParams }) {
   const params = await searchParams;
   const query = { category: first(params.category), q: first(params.q), sort: first(params.sort) };
-  const { items, total } = await getProducts({ ...query, limit: 100 });
+  const page = Math.max(1, Number.parseInt(first(params.page) ?? "1", 10) || 1);
+  const { items, total } = await getProducts({ ...query, limit: PAGE_SIZE, offset: (page - 1) * PAGE_SIZE });
+  const pageCount = Math.max(1, Math.ceil(total / PAGE_SIZE));
+
+  function pageHref(target: number) {
+    const search = new URLSearchParams();
+    for (const [key, value] of Object.entries(query)) if (value) search.set(key, value);
+    if (target > 1) search.set("page", String(target));
+    const qs = search.toString();
+    return `/products${qs ? `?${qs}` : ""}`;
+  }
 
   if (items.length === 0) {
     return (
@@ -76,6 +89,31 @@ async function ProductResults({ searchParams }: { searchParams: SearchParams }) 
         {total} product{total === 1 ? "" : "s"}
       </p>
       <ProductGrid products={items} />
+      {pageCount > 1 && (
+        <nav aria-label="Pagination" className="flex items-center justify-center gap-4 pt-4">
+          {page > 1 ? (
+            <Button asChild variant="outline">
+              <Link href={pageHref(page - 1)}>Previous</Link>
+            </Button>
+          ) : (
+            <Button variant="outline" disabled>
+              Previous
+            </Button>
+          )}
+          <span className="text-sm text-muted-foreground">
+            Page {Math.min(page, pageCount)} of {pageCount}
+          </span>
+          {page < pageCount ? (
+            <Button asChild variant="outline">
+              <Link href={pageHref(page + 1)}>Next</Link>
+            </Button>
+          ) : (
+            <Button variant="outline" disabled>
+              Next
+            </Button>
+          )}
+        </nav>
+      )}
     </div>
   );
 }

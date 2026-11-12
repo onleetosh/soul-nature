@@ -18,6 +18,7 @@ export function SortSelect() {
 
   function onChange(next: string) {
     const params = new URLSearchParams(searchParams.toString());
+    params.delete("page");
     if (next === "name") params.delete("sort");
     else params.set("sort", next);
     const qs = params.toString();

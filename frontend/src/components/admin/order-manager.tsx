@@ -26,14 +26,13 @@ export function OrderManager() {
   const [query, setQuery] = useState("");
   const [submittedQuery, setSubmittedQuery] = useState("");
   const [expanded, setExpanded] = useState<number | null>(null);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const statusParam = statusFilter === ALL ? undefined : (statusFilter as OrderStatus);
 
   useEffect(() => {
     let cancelled = false;
     adminApi
-      .listOrders(token, {
-        status: statusFilter === ALL ? undefined : (statusFilter as OrderStatus),
-        q: submittedQuery || undefined,
-      })
+      .listOrders(token, { status: statusParam, q: submittedQuery || undefined })
       .then((result) => {
         if (cancelled) return;
         setOrders(result);
@@ -43,7 +42,24 @@ export function OrderManager() {
     return () => {
       cancelled = true;
     };
-  }, [token, statusFilter, submittedQuery]);
+  }, [token, statusParam, submittedQuery]);
+
+  async function loadMore() {
+    if (!orders) return;
+    setLoadingMore(true);
+    try {
+      const next = await adminApi.listOrders(token, {
+        status: statusParam,
+        q: submittedQuery || undefined,
+        offset: orders.items.length,
+      });
+      setOrders((prev) => (prev ? { items: [...prev.items, ...next.items], total: next.total } : next));
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not load more orders.");
+    } finally {
+      setLoadingMore(false);
+    }
+  }
 
   async function changeStatus(order: Order, status: OrderStatus) {
     try {
@@ -163,6 +179,13 @@ export function OrderManager() {
               ))}
             </TableBody>
           </Table>
+        </div>
+      )}
+      {orders && orders.items.length < orders.total && (
+        <div className="flex justify-center">
+          <Button variant="outline" onClick={loadMore} disabled={loadingMore}>
+            {loadingMore ? "Loading…" : `Load more (${orders.total - orders.items.length} remaining)`}
+          </Button>
         </div>
       )}
     </section>

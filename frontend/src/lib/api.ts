@@ -55,6 +55,7 @@ export type ProductQuery = {
   sort?: string;
   featured?: boolean;
   limit?: number;
+  offset?: number;
 };
 
 export function getProducts(query: ProductQuery = {}) {
