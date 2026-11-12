@@ -79,7 +79,7 @@ def test_create_checkout_session(client, seeded, monkeypatch):
     assert res.status_code == 200, res.text
     assert res.json() == {"id": "cs_test_123", "url": "https://checkout.stripe.com/c/pay/cs_test_123"}
     assert captured["mode"] == "payment"
-    assert captured["metadata"] == {"cart": f"{oil.id}:2"}
+    assert captured["metadata"] == {"cart_0": f"{oil.id}:2:{oil.price_cents}"}
     assert captured["line_items"][0]["price_data"]["unit_amount"] == 2400
     assert captured["customer_email"] == "buyer@example.com"
     assert "{CHECKOUT_SESSION_ID}" in captured["success_url"]
@@ -145,3 +145,52 @@ def test_webhook_ignores_unpaid_sessions(client, seeded):
     body, headers = _signed(event)
     assert client.post("/api/stripe/webhook", content=body, headers=headers).status_code == 200
     assert seeded.exec(select(Order)).first() is None
+
+
+def test_webhook_uses_charged_price_and_survives_product_changes(client, seeded):
+    oil = _product(seeded, "cedar-sage-beard-oil")
+    balm = _product(seeded, "shea-butter-beard-balm")
+    oil_id, balm_id = oil.id, balm.id
+    oil.price_cents = 9999
+    seeded.add(oil)
+    seeded.delete(balm)
+    seeded.commit()
+
+    event = _completed_event("cs_changed", f"{oil_id}:1:2400,{balm_id}:2:1800", 2400 + 3600 + 695)
+    body, headers = _signed(event)
+    assert client.post("/api/stripe/webhook", content=body, headers=headers).status_code == 200
+
+    seeded.expire_all()
+    order = seeded.exec(select(Order).where(Order.stripe_session_id == "cs_changed")).one()
+    assert order.subtotal_cents == 2400 + 3600
+    prices = {item.product_name: (item.product_id, item.unit_price_cents) for item in order.items}
+    assert prices[oil.name] == (oil_id, 2400)
+    assert prices[f"Product #{balm_id}"] == (None, 1800)
+
+
+def test_webhook_fulfills_no_payment_required_sessions(client, seeded):
+    oil = _product(seeded, "cedar-sage-beard-oil")
+    event = _completed_event("cs_free", f"{oil.id}:1:0", 0)
+    event["data"]["object"]["payment_status"] = "no_payment_required"
+    body, headers = _signed(event)
+    assert client.post("/api/stripe/webhook", content=body, headers=headers).status_code == 200
+    assert seeded.exec(select(Order).where(Order.stripe_session_id == "cs_free")).first() is not None
+
+
+def test_webhook_reads_chunked_cart_metadata(client, seeded):
+    oil = _product(seeded, "cedar-sage-beard-oil")
+    event = _completed_event("cs_chunked", "", 2 * 2400 + 695)
+    event["data"]["object"]["metadata"] = {"cart_1": "2:2400", "cart_0": f"{oil.id}:"}
+    body, headers = _signed(event)
+    assert client.post("/api/stripe/webhook", content=body, headers=headers).status_code == 200
+    order = seeded.exec(select(Order).where(Order.stripe_session_id == "cs_chunked")).one()
+    assert order.items[0].quantity == 2
+
+
+def test_checkout_rejects_combined_quantity_over_limit(client, seeded):
+    oil = _product(seeded, "cedar-sage-beard-oil")
+    res = client.post(
+        "/api/checkout/session",
+        json={"items": [{"product_id": oil.id, "quantity": 20}, {"product_id": oil.id, "quantity": 1}]},
+    )
+    assert res.status_code == 400

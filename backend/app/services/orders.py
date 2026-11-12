@@ -9,6 +9,7 @@ from app.models import Order, OrderItem, OrderStatus, Product
 from app.schemas.order import CartItem, ShippingAddress
 
 ORDER_NUMBER_ALPHABET = string.ascii_uppercase.replace("O", "").replace("I", "") + "23456789"
+MAX_QUANTITY_PER_ITEM = 20
 
 
 class CartError(ValueError):
@@ -17,12 +18,15 @@ class CartError(ValueError):
 
 @dataclass
 class CartLine:
-    product: Product
+    product_id: int
+    name: str
+    unit_price_cents: int
     quantity: int
+    product: Product | None = None
 
     @property
     def line_total_cents(self) -> int:
-        return self.product.price_cents * self.quantity
+        return self.unit_price_cents * self.quantity
 
 
 @dataclass
@@ -60,9 +64,19 @@ def quote_cart(
         product = products.get(product_id)
         if product is None or (require_active and not product.is_active):
             raise CartError(f"Product {product_id} is not available")
+        if quantity > MAX_QUANTITY_PER_ITEM:
+            raise CartError(f"You can order at most {MAX_QUANTITY_PER_ITEM} of {product.name}")
         if enforce_stock and quantity > product.stock:
             raise CartError(f"Only {product.stock} of {product.name} left in stock")
-        lines.append(CartLine(product=product, quantity=quantity))
+        lines.append(
+            CartLine(
+                product_id=product_id,
+                name=product.name,
+                unit_price_cents=product.price_cents,
+                quantity=quantity,
+                product=product,
+            )
+        )
 
     subtotal = sum(line.line_total_cents for line in lines)
     return CartQuote(lines=lines, subtotal_cents=subtotal, shipping_cents=shipping_for(subtotal))
@@ -110,13 +124,13 @@ def create_order(
     for line in quote.lines:
         order.items.append(
             OrderItem(
-                product_id=line.product.id,
-                product_name=line.product.name,
-                unit_price_cents=line.product.price_cents,
+                product_id=line.product.id if line.product is not None else None,
+                product_name=line.name,
+                unit_price_cents=line.unit_price_cents,
                 quantity=line.quantity,
             )
         )
-        if status == OrderStatus.paid:
+        if status == OrderStatus.paid and line.product is not None:
             line.product.stock = max(0, line.product.stock - line.quantity)
             session.add(line.product)
 
