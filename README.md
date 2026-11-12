@@ -6,11 +6,10 @@ personal-care, fragrance, and wellness products.
 ## Project structure
 
 - `backend/` — FastAPI application, database models, seed data, and tests.
-- `frontend/` — static storefront prototype. The planned Next.js frontend is
-  not yet implemented.
+- `frontend/` — Next.js storefront with Tailwind CSS and shadcn/ui.
 
 The backend currently provides health, category, product, and order endpoints.
-The static storefront is not yet connected to the API.
+The storefront landing page is not yet connected to the API.
 
 ## Admin API
 
@@ -54,7 +53,7 @@ $env:STRIPE_CANCEL_URL = "http://localhost:3000/cart"
 ```
 
 Only test secret keys are accepted. Set the URLs to actual frontend routes when
-the checkout UI exists; the static prototype does not provide them yet. A
+the checkout UI exists; the frontend does not provide them yet. A
 checkout session is reused for retries. If it expires, the customer must create
 a new order; an interrupted session creation may require manual reconciliation
 after 23 hours to avoid accidentally charging twice.
@@ -74,8 +73,8 @@ production payment handling are not implemented.
 
 ## Backend setup
 
-With Python 3.10 or newer and GNU Make installed, run the following from the
-repository root in PowerShell:
+With Python 3.10 or newer, Node.js 20.9 or newer, npm, and GNU Make installed,
+run the following from the repository root in PowerShell:
 
 ```powershell
 make setup
@@ -84,8 +83,10 @@ make api
 ```
 
 In a second terminal at the repository root, run `make frontend` to serve the
-static storefront at `http://localhost:3000`. Stop each server with Ctrl+C.
-Run `make test` for the backend tests or `make help` to list the shortcuts.
+storefront at `http://localhost:3000`. Stop each server with Ctrl+C.
+Run `make test` for backend tests, `make frontend-check` for a production build
+and type check, or `make help` to list the shortcuts. If the backend is already
+set up, use `make frontend-setup` to install only the frontend dependencies.
 The backend commands run in `backend/`, so the default SQLite database is
 created there. `make seed` adds missing sample data without deleting existing
 records. If a port is already in use, choose another with, for example,
@@ -124,13 +125,15 @@ running the seed or server commands; do not overwrite an existing database
 without first checking it. Create a fresh virtual environment in `backend/`
 instead of moving the old one.
 
-## Frontend prototype
+## Frontend setup without Make
 
 From the repository root:
 
 ```powershell
 cd frontend
-python -m http.server 3000
+npm ci
+npm run dev
 ```
 
 Open `http://localhost:3000` in a browser.
+Run `npm run build` in `frontend/` to verify the production build.
