@@ -74,8 +74,29 @@ production payment handling are not implemented.
 
 ## Backend setup
 
-With Python 3.10 or newer, run the following from the repository root in
-PowerShell:
+With Python 3.10 or newer and GNU Make installed, run the following from the
+repository root in PowerShell:
+
+```powershell
+make setup
+make seed
+make api
+```
+
+In a second terminal at the repository root, run `make frontend` to serve the
+static storefront at `http://localhost:3000`. Stop each server with Ctrl+C.
+Run `make test` for the backend tests or `make help` to list the shortcuts.
+The backend commands run in `backend/`, so the default SQLite database is
+created there. `make seed` adds missing sample data without deleting existing
+records. If a port is already in use, choose another with, for example,
+`make frontend FRONTEND_PORT=3001` or `make api API_PORT=8001`.
+
+On Windows, Make uses the Python launcher (`py -3`); on macOS and Linux, it
+uses `python3`. Set a different interpreter when needed, for example
+`make setup PYTHON=python`. GNU Make is not included with Windows by default;
+install it separately or use the manual commands below.
+
+Without Make, run the following from the repository root in PowerShell:
 
 ```powershell
 cd backend
