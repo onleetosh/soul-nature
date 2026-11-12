@@ -24,6 +24,21 @@ E-commerce storefront for **Soul of Nature**, a Black-owned wellness and men's g
 
 ## Quick start
 
+With `make` (macOS/Linux):
+
+```bash
+git clone https://github.com/onleetosh/soul-nature.git
+cd soul-nature
+make dev      # installs deps, creates env files, starts Postgres, seeds, runs backend + frontend
+```
+
+Then open http://localhost:3000 (API at http://localhost:8000/docs). Press Ctrl+C to stop the servers
+and `make stop` to stop the database. Run `make help` for all targets (`setup`, `db`, `seed`, `backend`,
+`frontend`, `stripe`, `test`, `lint`, `build`, `check`, `stop`, `clean`). `make db` uses port 5432, so
+stop any other PostgreSQL on that port first.
+
+Or step by step:
+
 ```bash
 git clone https://github.com/onleetosh/soul-nature.git
 cd soul-nature
@@ -104,6 +119,8 @@ Set `ADMIN_TOKEN` in `backend/.env`, restart the API, then visit http://localhos
 ## Development
 
 ```bash
+make check    # or, by hand:
+
 # Backend
 cd backend && pytest && ruff check .
 
