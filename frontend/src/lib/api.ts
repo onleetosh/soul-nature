@@ -2,6 +2,7 @@ import type {
   Category,
   CheckoutSessionCreated,
   CheckoutSessionStatus,
+  Order,
   Product,
   ProductList,
 } from "@/lib/types";
@@ -85,4 +86,9 @@ export function createCheckoutSession(payload: {
 
 export function getCheckoutSessionStatus(sessionId: string) {
   return apiFetch<CheckoutSessionStatus>(`/api/checkout/session/${encodeURIComponent(sessionId)}`);
+}
+
+export function lookupOrder(email: string, orderNumber: string) {
+  const params = new URLSearchParams({ email: email.trim(), order_number: orderNumber.trim() });
+  return apiFetch<Order>(`/api/orders/lookup?${params}`);
 }
