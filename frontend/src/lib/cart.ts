@@ -97,14 +97,8 @@ function clampQuantity(quantity: number, stock: number) {
   return Math.max(0, Math.min(quantity, stock, MAX_QUANTITY_PER_ITEM));
 }
 
-export function addToCart(product: Product, quantity = 1) {
-  ensureLoaded();
-  const existing = lines.find((line) => line.productId === product.id);
-  if (existing) {
-    updateQuantity(product.id, existing.quantity + quantity);
-    return;
-  }
-  const line: CartLine = {
+function lineFromProduct(product: Product, quantity: number): CartLine {
+  return {
     productId: product.id,
     slug: product.slug,
     name: product.name,
@@ -116,6 +110,22 @@ export function addToCart(product: Product, quantity = 1) {
     stock: product.stock,
     quantity: clampQuantity(quantity, product.stock),
   };
+}
+
+export function addToCart(product: Product, quantity = 1) {
+  ensureLoaded();
+  const existing = lines.find((line) => line.productId === product.id);
+  if (existing) {
+    // Refresh cached product details (stock, price) with the latest data from the page.
+    const updated = lineFromProduct(product, existing.quantity + quantity);
+    setLines(
+      lines
+        .map((line) => (line.productId === product.id ? updated : line))
+        .filter((line) => line.quantity > 0),
+    );
+    return;
+  }
+  const line = lineFromProduct(product, quantity);
   if (line.quantity > 0) setLines([...lines, line]);
 }
 
