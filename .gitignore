@@ -12,18 +12,23 @@ venv/
 .mypy_cache/
 .ruff_cache/
 *.egg-info/
+.coverage
+htmlcov/
 *.db
+*.sqlite
 *.sqlite3
 
 # Node / Next.js
 node_modules/
 .next/
 out/
+dist/
 next-env.d.ts
 *.tsbuildinfo
 npm-debug.log*
 
 # OS / editors
 .DS_Store
+Thumbs.db
 .idea/
 .vscode/
