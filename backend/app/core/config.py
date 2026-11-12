@@ -9,6 +9,7 @@ class Settings(BaseSettings):
     app_name: str = "Soul of Nature API"
     environment: str = "development"
     cors_origins: list[str] = ["http://localhost:3000"]
+    database_url: str = "postgresql+psycopg://soul:soul@localhost:5432/soul_nature"
 
 
 @lru_cache

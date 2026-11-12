@@ -1,9 +1,30 @@
-import pytest
-from fastapi.testclient import TestClient
+import os
 
-from app.main import create_app
+os.environ["DATABASE_URL"] = "sqlite://"
+
+import pytest  # noqa: E402
+from fastapi.testclient import TestClient  # noqa: E402
+from sqlmodel import Session, SQLModel  # noqa: E402
+
+import app.models  # noqa: E402,F401
+from app.db.session import engine  # noqa: E402
+from app.main import create_app  # noqa: E402
+
+
+@pytest.fixture(autouse=True)
+def _reset_db():
+    SQLModel.metadata.create_all(engine)
+    yield
+    SQLModel.metadata.drop_all(engine)
 
 
 @pytest.fixture
-def client() -> TestClient:
-    return TestClient(create_app())
+def session():
+    with Session(engine) as s:
+        yield s
+
+
+@pytest.fixture
+def client():
+    with TestClient(create_app()) as c:
+        yield c
