@@ -33,7 +33,7 @@ def list_products(
     limit: Annotated[int, Query(ge=1, le=100)] = 50,
     offset: Annotated[int, Query(ge=0)] = 0,
 ):
-    stmt = select(Product).where(Product.is_active == True)  # noqa: E712
+    stmt = select(Product).where(Product.is_active == True)
     if category:
         stmt = stmt.join(Category).where(Category.slug == category)
     if featured is not None:
@@ -54,7 +54,7 @@ def list_products(
 
 @router.get("/products/slug/{slug}", response_model=ProductRead)
 def get_product_by_slug(slug: str, session: SessionDep):
-    product = session.exec(select(Product).where(Product.slug == slug, Product.is_active == True)).first()  # noqa: E712
+    product = session.exec(select(Product).where(Product.slug == slug, Product.is_active == True)).first()
     if product is None:
         raise HTTPException(status_code=404, detail="Product not found")
     return product

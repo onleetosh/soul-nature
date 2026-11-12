@@ -7,7 +7,11 @@ from sqlmodel import select
 
 from app.api.deps import SessionDep
 from app.models import Order
-from app.schemas.checkout import CheckoutRequest, CheckoutSessionCreated, CheckoutSessionStatus
+from app.schemas.checkout import (
+    CheckoutRequest,
+    CheckoutSessionCreated,
+    CheckoutSessionStatus,
+)
 from app.services.orders import CartError, quote_cart
 from app.services.payments import (
     PAID_EVENTS,

@@ -2,13 +2,13 @@ import os
 
 os.environ["DATABASE_URL"] = "sqlite://"
 
-import pytest  # noqa: E402
-from fastapi.testclient import TestClient  # noqa: E402
-from sqlmodel import Session, SQLModel  # noqa: E402
+import pytest
+from fastapi.testclient import TestClient
+from sqlmodel import Session, SQLModel
 
-import app.models  # noqa: E402,F401
-from app.db.session import engine  # noqa: E402
-from app.main import create_app  # noqa: E402
+import app.models  # noqa: F401
+from app.db.session import engine
+from app.main import create_app
 
 
 @pytest.fixture(autouse=True)
