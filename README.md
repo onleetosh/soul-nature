@@ -19,6 +19,7 @@ variables before starting the backend:
 
 ```powershell
 $env:STRIPE_SECRET_KEY = "sk_test_..."
+$env:STRIPE_WEBHOOK_SECRET = "whsec_..."
 $env:STRIPE_SUCCESS_URL = "http://localhost:3000/success"
 $env:STRIPE_CANCEL_URL = "http://localhost:3000/cart"
 ```
@@ -28,6 +29,19 @@ the checkout UI exists; the static prototype does not provide them yet. A
 checkout session is reused for retries. If it expires, the customer must create
 a new order; an interrupted session creation may require manual reconciliation
 after 23 hours to avoid accidentally charging twice.
+
+Forward Stripe test events to `POST /api/v1/webhooks/stripe`, for example with
+the Stripe CLI:
+
+```powershell
+stripe listen --forward-to localhost:8000/api/v1/webhooks/stripe
+```
+
+Set `STRIPE_WEBHOOK_SECRET` to the signing secret printed by the CLI and
+restart the backend. A verified paid checkout marks the matching order `paid`;
+the browser's success redirect does not confirm payment. These endpoints are
+for development only: inventory reservation, shipping, tax, refunds, and
+production payment handling are not implemented.
 
 ## Backend setup
 

@@ -12,6 +12,7 @@ from app.checkout import router as checkout_router
 from app.database import create_database_tables, engine, get_session
 from app.models import Category, Order, OrderItem, Product
 from app.schemas import CategoryRead, OrderCreate, OrderRead, ProductRead
+from app.webhooks import router as webhook_router
 
 
 @asynccontextmanager
@@ -23,6 +24,7 @@ async def lifespan(_: FastAPI):
 
 app = FastAPI(title="Soul of Nature API", version="0.1.0", lifespan=lifespan)
 app.include_router(checkout_router)
+app.include_router(webhook_router)
 
 cors_origins = [
     origin.strip()
