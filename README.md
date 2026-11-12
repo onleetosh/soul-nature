@@ -12,6 +12,23 @@ personal-care, fragrance, and wellness products.
 The backend currently provides health, category, product, and order endpoints.
 The static storefront is not yet connected to the API.
 
+The test-mode checkout endpoint, `POST /api/v1/checkout/sessions`, accepts an
+order's `email` and `order_number` and returns a Stripe-hosted `checkout_url`.
+It uses the order's stored prices. Configure the following environment
+variables before starting the backend:
+
+```powershell
+$env:STRIPE_SECRET_KEY = "sk_test_..."
+$env:STRIPE_SUCCESS_URL = "http://localhost:3000/success"
+$env:STRIPE_CANCEL_URL = "http://localhost:3000/cart"
+```
+
+Only test secret keys are accepted. Set the URLs to actual frontend routes when
+the checkout UI exists; the static prototype does not provide them yet. A
+checkout session is reused for retries. If it expires, the customer must create
+a new order; an interrupted session creation may require manual reconciliation
+after 23 hours to avoid accidentally charging twice.
+
 ## Backend setup
 
 With Python 3.10 or newer, run the following from the repository root in

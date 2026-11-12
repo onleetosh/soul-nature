@@ -21,6 +21,6 @@ def get_session() -> Generator[Session, None, None]:
 
 
 def create_database_tables() -> None:
-    from app.models import Category, Order, OrderItem, Product  # noqa: F401
+    from app.models import Category, CheckoutAttempt, Order, OrderItem, Product  # noqa: F401
 
     Base.metadata.create_all(bind=engine)

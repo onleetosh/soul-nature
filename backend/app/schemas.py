@@ -70,3 +70,14 @@ class OrderRead(BaseModel):
     subtotal_cents: int = Field(ge=0)
     total_cents: int = Field(ge=0)
     items: list[OrderItemRead]
+
+
+class CheckoutCreate(BaseModel):
+    email: EmailStr
+    order_number: str = Field(
+        min_length=28, max_length=28, pattern=r"^SON-[A-F0-9]{24}$"
+    )
+
+
+class CheckoutRead(BaseModel):
+    checkout_url: str
