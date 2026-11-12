@@ -28,3 +28,11 @@ def session():
 def client():
     with TestClient(create_app()) as c:
         yield c
+
+
+@pytest.fixture
+def seeded(session):
+    from app.seed import seed
+
+    seed(session)
+    return session
