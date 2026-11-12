@@ -47,7 +47,9 @@ backend: setup ## Run the API at http://localhost:8000 (docs at /docs)
 frontend: setup ## Run the storefront at http://localhost:3000
 	cd frontend && npm run dev
 
-dev: setup db seed ## Start the database, seed it, and run backend + frontend together
+dev: setup ## Start the database, seed it, and run backend + frontend together
+	@$(MAKE) --no-print-directory db
+	@$(MAKE) --no-print-directory seed
 	@$(MAKE) --no-print-directory -j2 backend frontend
 
 stripe: ## Forward Stripe test webhooks to the local API (requires the Stripe CLI)
