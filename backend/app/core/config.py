@@ -19,6 +19,8 @@ class Settings(BaseSettings):
     stripe_secret_key: str = ""
     stripe_webhook_secret: str = ""
 
+    admin_token: str = ""
+
 
 @lru_cache
 def get_settings() -> Settings:

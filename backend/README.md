@@ -41,6 +41,11 @@ The API is served at http://localhost:8000 (interactive docs at `/docs`).
 `POST /api/checkout/session` creates a Checkout Session from the cart; the
 `checkout.session.completed` webhook creates the paid `Order` record (idempotent per session).
 
+## Admin API
+
+Endpoints under `/api/admin/*` (product CRUD, order listing and status updates) require
+`Authorization: Bearer $ADMIN_TOKEN`. If `ADMIN_TOKEN` is empty the admin API is disabled.
+
 ## Tests
 
 ```bash
