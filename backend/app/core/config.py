@@ -11,6 +11,10 @@ class Settings(BaseSettings):
     cors_origins: list[str] = ["http://localhost:3000"]
     database_url: str = "postgresql+psycopg://soul:soul@localhost:5432/soul_nature"
 
+    currency: str = "usd"
+    shipping_flat_cents: int = 695
+    free_shipping_threshold_cents: int = 7500
+
 
 @lru_cache
 def get_settings() -> Settings:
