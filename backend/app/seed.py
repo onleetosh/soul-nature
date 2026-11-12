@@ -205,26 +205,21 @@ PRODUCTS = [
 
 
 def seed(session: Session) -> None:
+    """Insert missing sample categories/products; existing rows (and admin edits) are left untouched."""
     categories: dict[str, Category] = {}
     for data in CATEGORIES:
         category = session.exec(select(Category).where(Category.slug == data["slug"])).first()
         if category is None:
             category = Category(**data)
-        else:
-            category.sqlmodel_update(data)
-        session.add(category)
+            session.add(category)
         categories[data["slug"]] = category
     session.flush()
 
     for data in PRODUCTS:
         values = {k: v for k, v in data.items() if k != "category"}
         values["category_id"] = categories[data["category"]].id
-        product = session.exec(select(Product).where(Product.slug == data["slug"])).first()
-        if product is None:
-            product = Product(**values)
-        else:
-            product.sqlmodel_update(values)
-        session.add(product)
+        if session.exec(select(Product).where(Product.slug == data["slug"])).first() is None:
+            session.add(Product(**values))
     session.commit()
 
 
