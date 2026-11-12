@@ -25,9 +25,9 @@ def _product(session, slug):
     return session.exec(select(Product).where(Product.slug == slug)).one()
 
 
-def _signed(payload: dict) -> tuple[bytes, dict]:
+def _signed(payload: dict, ts: int | None = None) -> tuple[bytes, dict]:
     body = json.dumps(payload).encode()
-    ts = int(time.time())
+    ts = int(time.time()) if ts is None else ts
     sig = hmac.new(WEBHOOK_SECRET.encode(), f"{ts}.".encode() + body, hashlib.sha256).hexdigest()
     return body, {"Stripe-Signature": f"t={ts},v1={sig}", "Content-Type": "application/json"}
 
@@ -131,6 +131,11 @@ def test_webhook_creates_paid_order_idempotently(client, seeded):
 def test_webhook_rejects_bad_signature(client, seeded):
     body, headers = _signed(_completed_event("cs_x", "1:1", 100))
     headers["Stripe-Signature"] = "t=1,v1=deadbeef"
+    assert client.post("/api/stripe/webhook", content=body, headers=headers).status_code == 400
+
+
+def test_webhook_rejects_stale_signature(client, seeded):
+    body, headers = _signed(_completed_event("cs_old", "1:1", 100), ts=int(time.time()) - 3600)
     assert client.post("/api/stripe/webhook", content=body, headers=headers).status_code == 400
 
 

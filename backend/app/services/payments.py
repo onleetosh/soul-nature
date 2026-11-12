@@ -11,6 +11,8 @@ from app.services.orders import CartQuote, create_order, quote_cart
 
 logger = logging.getLogger(__name__)
 
+WEBHOOK_TOLERANCE_SECONDS = 300
+
 PAID_EVENTS = {"checkout.session.completed", "checkout.session.async_payment_succeeded"}
 
 
@@ -78,7 +80,9 @@ def verify_webhook(payload: bytes, signature: str | None) -> None:
     settings = get_settings()
     if not settings.stripe_webhook_secret:
         raise PaymentsNotConfigured("STRIPE_WEBHOOK_SECRET is not set")
-    stripe.WebhookSignature.verify_header(payload, signature, settings.stripe_webhook_secret)
+    stripe.WebhookSignature.verify_header(
+        payload, signature, settings.stripe_webhook_secret, tolerance=WEBHOOK_TOLERANCE_SECONDS
+    )
 
 
 def _shipping_from_session(data: dict[str, Any]) -> tuple[str, ShippingAddress]:
