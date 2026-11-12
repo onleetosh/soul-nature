@@ -128,6 +128,17 @@ cd backend && pytest && ruff check .
 cd frontend && npm run lint && npx tsc --noEmit && npm run build
 ```
 
+## Deploying to Render
+
+`render.yaml` is a [Render Blueprint](https://render.com/docs/blueprint-spec) that creates a free PostgreSQL database, the API (`soul-nature-api`) and the storefront (`soul-nature-web`).
+
+1. In the Render dashboard choose **New → Blueprint**, connect this repository and pick the branch to deploy.
+2. When prompted, enter `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET` (leave them empty to deploy without payments).
+3. After the first deploy, find the generated `ADMIN_TOKEN` under the API service's **Environment** tab.
+4. For payments, add a Stripe webhook endpoint at `https://soul-nature-api.onrender.com/api/stripe/webhook` and put its signing secret in `STRIPE_WEBHOOK_SECRET`.
+
+The API seeds missing sample products on every start. If Render gives either service a different URL, update `CORS_ORIGINS` and `FRONTEND_URL` on the API and `NEXT_PUBLIC_API_URL` on the storefront, then redeploy the storefront. Free services sleep when idle, so the first request can take up to a minute.
+
 ## License
 
 [MIT](LICENSE)
