@@ -41,7 +41,13 @@ def shipping_for(subtotal_cents: int) -> int:
     return 0 if subtotal_cents >= settings.free_shipping_threshold_cents else settings.shipping_flat_cents
 
 
-def quote_cart(session: Session, items: list[CartItem], *, enforce_stock: bool = True) -> CartQuote:
+def quote_cart(
+    session: Session,
+    items: list[CartItem],
+    *,
+    enforce_stock: bool = True,
+    require_active: bool = True,
+) -> CartQuote:
     quantities: dict[int, int] = {}
     for item in items:
         quantities[item.product_id] = quantities.get(item.product_id, 0) + item.quantity
@@ -52,7 +58,7 @@ def quote_cart(session: Session, items: list[CartItem], *, enforce_stock: bool =
     lines: list[CartLine] = []
     for product_id, quantity in quantities.items():
         product = products.get(product_id)
-        if product is None or not product.is_active:
+        if product is None or (require_active and not product.is_active):
             raise CartError(f"Product {product_id} is not available")
         if enforce_stock and quantity > product.stock:
             raise CartError(f"Only {product.stock} of {product.name} left in stock")

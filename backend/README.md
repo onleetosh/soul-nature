@@ -26,6 +26,21 @@ uvicorn app.main:app --reload
 
 The API is served at http://localhost:8000 (interactive docs at `/docs`).
 
+## Stripe (test mode)
+
+1. Copy your test secret key from https://dashboard.stripe.com/test/apikeys into `STRIPE_SECRET_KEY`.
+2. Forward webhooks locally with the [Stripe CLI](https://docs.stripe.com/stripe-cli):
+
+   ```bash
+   stripe listen --forward-to localhost:8000/api/stripe/webhook
+   ```
+
+   Put the printed `whsec_...` signing secret in `STRIPE_WEBHOOK_SECRET`.
+3. Pay with test card `4242 4242 4242 4242`, any future expiry, any CVC.
+
+`POST /api/checkout/session` creates a Checkout Session from the cart; the
+`checkout.session.completed` webhook creates the paid `Order` record (idempotent per session).
+
 ## Tests
 
 ```bash

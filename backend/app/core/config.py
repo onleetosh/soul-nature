@@ -15,6 +15,10 @@ class Settings(BaseSettings):
     shipping_flat_cents: int = 695
     free_shipping_threshold_cents: int = 7500
 
+    frontend_url: str = "http://localhost:3000"
+    stripe_secret_key: str = ""
+    stripe_webhook_secret: str = ""
+
 
 @lru_cache
 def get_settings() -> Settings:
