@@ -1,4 +1,10 @@
-import type { Category, Product, ProductList } from "@/lib/types";
+import type {
+  Category,
+  CheckoutSessionCreated,
+  CheckoutSessionStatus,
+  Product,
+  ProductList,
+} from "@/lib/types";
 
 const PUBLIC_API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
@@ -65,4 +71,18 @@ export function getProductBySlug(slug: string) {
 
 export function getCategories() {
   return apiFetch<Category[]>("/api/categories");
+}
+
+export function createCheckoutSession(payload: {
+  email?: string;
+  items: { product_id: number; quantity: number }[];
+}) {
+  return apiFetch<CheckoutSessionCreated>("/api/checkout/session", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+export function getCheckoutSessionStatus(sessionId: string) {
+  return apiFetch<CheckoutSessionStatus>(`/api/checkout/session/${encodeURIComponent(sessionId)}`);
 }

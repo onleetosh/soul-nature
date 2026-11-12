@@ -27,3 +27,11 @@ export type ProductList = {
   items: Product[];
   total: number;
 };
+
+export type CheckoutSessionCreated = { id: string; url: string };
+
+export type CheckoutSessionStatus = {
+  status: "complete" | "processing";
+  order_number: string | null;
+  email: string | null;
+};
