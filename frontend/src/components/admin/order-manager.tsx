@@ -28,6 +28,13 @@ export function OrderManager() {
   const [expanded, setExpanded] = useState<number | null>(null);
   const [loadingMore, setLoadingMore] = useState(false);
   const statusParam = statusFilter === ALL ? undefined : (statusFilter as OrderStatus);
+  // Orders whose status was changed out of the active filter stay visible but no longer count
+  // toward the server-side offset.
+  const loadedMatching = orders
+    ? statusParam
+      ? orders.items.filter((o) => o.status === statusParam).length
+      : orders.items.length
+    : 0;
 
   useEffect(() => {
     let cancelled = false;
@@ -51,9 +58,13 @@ export function OrderManager() {
       const next = await adminApi.listOrders(token, {
         status: statusParam,
         q: submittedQuery || undefined,
-        offset: orders.items.length,
+        offset: loadedMatching,
       });
-      setOrders((prev) => (prev ? { items: [...prev.items, ...next.items], total: next.total } : next));
+      setOrders((prev) => {
+        if (!prev) return next;
+        const seen = new Set(prev.items.map((o) => o.id));
+        return { items: [...prev.items, ...next.items.filter((o) => !seen.has(o.id))], total: next.total };
+      });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Could not load more orders.");
     } finally {
@@ -64,9 +75,15 @@ export function OrderManager() {
   async function changeStatus(order: Order, status: OrderStatus) {
     try {
       const updated = await adminApi.updateOrderStatus(token, order.id, status);
-      setOrders((prev) =>
-        prev ? { ...prev, items: prev.items.map((o) => (o.id === updated.id ? updated : o)) } : prev,
-      );
+      setOrders((prev) => {
+        if (!prev) return prev;
+        const left = statusParam !== undefined && order.status === statusParam && updated.status !== statusParam;
+        const joined = statusParam !== undefined && order.status !== statusParam && updated.status === statusParam;
+        return {
+          items: prev.items.map((o) => (o.id === updated.id ? updated : o)),
+          total: prev.total - (left ? 1 : 0) + (joined ? 1 : 0),
+        };
+      });
       toast.success(`${order.order_number} marked ${status}`);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Could not update order.");
@@ -181,10 +198,10 @@ export function OrderManager() {
           </Table>
         </div>
       )}
-      {orders && orders.items.length < orders.total && (
+      {orders && loadedMatching < orders.total && (
         <div className="flex justify-center">
           <Button variant="outline" onClick={loadMore} disabled={loadingMore}>
-            {loadingMore ? "Loading…" : `Load more (${orders.total - orders.items.length} remaining)`}
+            {loadingMore ? "Loading…" : `Load more (${orders.total - loadedMatching} remaining)`}
           </Button>
         </div>
       )}
