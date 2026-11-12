@@ -1,7 +1,10 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { ArrowRightIcon, DropletsIcon, FlowerIcon, LeafIcon, SparklesIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { ProductGrid, ProductGridSkeleton } from "@/components/product/product-card";
+import { getProducts } from "@/lib/api";
 import { siteConfig } from "@/lib/site";
 
 const categories = [
@@ -10,6 +13,12 @@ const categories = [
   { slug: "fragrance", name: "Fragrance", icon: FlowerIcon, blurb: "Earthy colognes & oils" },
   { slug: "wellness", name: "Wellness", icon: LeafIcon, blurb: "Teas, aromatherapy & rituals" },
 ];
+
+async function FeaturedProducts() {
+  const { items } = await getProducts({ featured: true, limit: 4 }).catch(() => ({ items: [] }));
+  if (items.length === 0) return <p className="text-muted-foreground">New arrivals are on the way.</p>;
+  return <ProductGrid products={items} />;
+}
 
 export default function HomePage() {
   return (
@@ -34,6 +43,18 @@ export default function HomePage() {
             </Button>
           </div>
         </div>
+      </section>
+
+      <section className="container mx-auto px-4 pt-16">
+        <div className="mb-8 flex items-end justify-between gap-4">
+          <h2 className="text-3xl font-semibold">Customer favorites</h2>
+          <Link href="/products" className="text-sm font-medium text-primary hover:underline">
+            View all
+          </Link>
+        </div>
+        <Suspense fallback={<ProductGridSkeleton count={4} />}>
+          <FeaturedProducts />
+        </Suspense>
       </section>
 
       <section className="container mx-auto px-4 py-16">
