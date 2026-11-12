@@ -2,6 +2,7 @@ import secrets
 import string
 from dataclasses import dataclass
 
+from sqlalchemy import case, update
 from sqlmodel import Session, col, select
 
 from app.core.config import get_settings
@@ -131,8 +132,12 @@ def create_order(
             )
         )
         if status == OrderStatus.paid and line.product is not None:
-            line.product.stock = max(0, line.product.stock - line.quantity)
-            session.add(line.product)
+            # Decrement in SQL so concurrent fulfillments don't overwrite each other.
+            session.exec(
+                update(Product)
+                .where(col(Product.id) == line.product_id)
+                .values(stock=case((col(Product.stock) > line.quantity, col(Product.stock) - line.quantity), else_=0))
+            )
 
     session.add(order)
     session.commit()
