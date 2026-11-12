@@ -20,6 +20,7 @@ python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements-dev.txt
 cp .env.example .env
+python -m app.seed          # load sample categories and products
 uvicorn app.main:app --reload
 ```
 
