@@ -159,3 +159,13 @@ The shop reads the API on the Next.js server at `http://127.0.0.1:8000` by
 default. Start and seed the backend first. If it runs elsewhere, set
 `API_BASE_URL` in the frontend's environment before starting Next.js, for
 example `$env:API_BASE_URL = "http://127.0.0.1:8001"`.
+
+## Frontend browser tests
+
+After installing frontend dependencies, run `npx playwright install chromium`
+once from `frontend/`, then run `npm run test:e2e` there (or `make frontend-test`
+from the repository root). The command builds the frontend and starts an
+isolated fixture API and storefront on ports 18791 and 13091; those ports must
+be free. Tests use sample data in memory and do not touch the local database or
+contact Stripe. Backend order and webhook behavior is tested separately by
+`make test`; a real Stripe test-mode payment still needs manual verification.

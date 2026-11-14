@@ -11,7 +11,7 @@ API_PORT ?= 8000
 FRONTEND_PORT ?= 3000
 
 .DEFAULT_GOAL := help
-.PHONY: help setup frontend-setup seed api frontend test frontend-check
+.PHONY: help setup frontend-setup seed api frontend test frontend-check frontend-test
 
 help:
 	@echo make setup    - Install backend and frontend dependencies
@@ -21,6 +21,7 @@ help:
 	@echo make frontend - Start the storefront on port $(FRONTEND_PORT)
 	@echo make test     - Run backend tests
 	@echo make frontend-check - Build and type-check the frontend
+	@echo make frontend-test - Build and run frontend browser tests
 
 setup:
 	cd backend && $(PYTHON) -m venv .venv
@@ -44,3 +45,6 @@ test:
 
 frontend-check:
 	cd frontend && npm run build
+
+frontend-test:
+	cd frontend && npm run test:e2e
