@@ -7,6 +7,7 @@ const collections = [
     alt: "A considered men's grooming ritual",
     number: "01 / THE DAILY RITUAL",
     title: "Beard & grooming",
+    category: "grooming",
   },
   {
     className: "collection-wellness",
@@ -14,6 +15,7 @@ const collections = [
     alt: "Natural personal-care products arranged on a warm surface",
     number: "02 / MAKE SPACE",
     title: "Body & wellness",
+    category: "wellness",
   },
   {
     className: "collection-scent",
@@ -21,6 +23,7 @@ const collections = [
     alt: "A warm, intimate fragrance display",
     number: "03 / LEAVE A LITTLE TRACE",
     title: "Fragrance",
+    category: "fragrance",
   },
 ];
 
@@ -79,7 +82,7 @@ export default function Home() {
         </div>
         <div className="collection-grid">
           {collections.map((collection) => (
-            <a key={collection.title} className={`collection-card ${collection.className}`} href="#promise">
+            <a key={collection.title} className={`collection-card ${collection.className}`} href={`/shop?category=${collection.category}`}>
               <img src={collection.image} alt={collection.alt} loading="lazy" />
               <span className="collection-shade" />
               <span className="collection-content">
@@ -110,7 +113,7 @@ export default function Home() {
         <span className="closing-mark" aria-hidden="true">✳</span>
         <p className="eyebrow">A moment, just for you</p>
         <h2>Make room<br />for <span>yourself.</span></h2>
-        <a className="button button-light" href="#collections">
+        <a className="button button-light" href="/shop">
           Explore the collections <span aria-hidden="true">↗</span>
         </a>
       </section>

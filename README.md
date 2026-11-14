@@ -8,8 +8,9 @@ personal-care, fragrance, and wellness products.
 - `backend/` — FastAPI application, database models, seed data, and tests.
 - `frontend/` — Next.js storefront with Tailwind CSS and shadcn/ui.
 
-The backend currently provides health, category, product, and order endpoints.
-The storefront landing page is not yet connected to the API.
+The backend provides health, category, product, and order endpoints. The
+storefront includes a catalog, category filters, and product detail pages backed
+by the API. Cart and checkout pages are not yet implemented.
 
 ## Admin API
 
@@ -137,3 +138,7 @@ npm run dev
 
 Open `http://localhost:3000` in a browser.
 Run `npm run build` in `frontend/` to verify the production build.
+The shop reads the API on the Next.js server at `http://127.0.0.1:8000` by
+default. Start and seed the backend first. If it runs elsewhere, set
+`API_BASE_URL` in the frontend's environment before starting Next.js, for
+example `$env:API_BASE_URL = "http://127.0.0.1:8001"`.

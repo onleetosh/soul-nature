@@ -32,11 +32,11 @@ export function SiteHeader() {
           aria-label="Main navigation"
           onClick={() => setOpen(false)}
         >
-          <a href="/#collections">Shop</a>
+          <a href="/shop">Shop</a>
           <a href="/#story">Our story</a>
           <a href="/#promise">Our promise</a>
         </nav>
-        <a className="header-cta" href="/#collections">
+        <a className="header-cta" href="/shop">
           Find your ritual <span aria-hidden="true">↗</span>
         </a>
       </header>
