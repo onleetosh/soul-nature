@@ -10,7 +10,9 @@ personal-care, fragrance, and wellness products.
 
 The backend provides health, category, product, and order endpoints. The
 storefront includes a catalog, category filters, and product detail pages backed
-by the API. Cart and checkout pages are not yet implemented.
+by the API. Guests can add items to a cart saved in browser localStorage;
+checkout pages are not yet implemented. Cart prices and stock are refreshed
+from the API when viewing the cart, and are not reserved.
 
 ## Admin API
 

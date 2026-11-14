@@ -1,9 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { useCart } from "@/components/cart-provider";
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
+  const { items, ready, error } = useCart();
+  const count = items.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
     <>
@@ -36,6 +39,9 @@ export function SiteHeader() {
           <a href="/#story">Our story</a>
           <a href="/#promise">Our promise</a>
         </nav>
+        <a className="header-cart" href="/cart" aria-label={ready && !error ? `Cart, ${count} ${count === 1 ? "item" : "items"}` : "Cart"}>
+          Cart{ready && !error ? ` (${count})` : ""}
+        </a>
         <a className="header-cta" href="/shop">
           Find your ritual <span aria-hidden="true">↗</span>
         </a>
