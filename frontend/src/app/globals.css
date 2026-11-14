@@ -610,6 +610,18 @@ a {
   margin: 0;
 }
 
+.footer-navigation {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px 18px;
+  font-size: 11px;
+}
+
+.footer-navigation a:hover {
+  color: var(--clay);
+}
+
 .footer-copyright {
   white-space: nowrap;
 }
@@ -639,6 +651,33 @@ button:focus-visible {
   color: #68695d;
   font-size: 14px;
   line-height: 1.8;
+}
+
+.info-page {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.info-page .info-lead {
+  max-width: 720px;
+  color: #56584c;
+  font-size: 18px;
+  line-height: 1.8;
+}
+
+.info-page section {
+  max-width: 650px;
+  margin: 38px 0;
+  color: #56584c;
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.info-page section h2 {
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: 26px;
+  font-weight: 500;
 }
 
 .shop-filters,

@@ -105,7 +105,7 @@ export default function Home() {
             for every day—rooted in care for yourself, your community, and the
             world around you.
           </p>
-          <a className="text-link" href="#story">Get to know us <span aria-hidden="true">↗</span></a>
+          <a className="text-link" href="/about">Get to know us <span aria-hidden="true">↗</span></a>
         </div>
       </section>
 

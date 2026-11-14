@@ -13,6 +13,9 @@ storefront includes a catalog, category filters, and product detail pages backed
 by the API. Guests can add items to a cart saved in browser localStorage and
 create a pending order for Stripe test checkout. Cart prices and stock are
 refreshed from the API when viewing the cart, and are not reserved.
+The About, Contact, and Shipping & Returns pages are available in the
+storefront. Contact information and shipping/returns policies are not yet
+configured and must be supplied before launch.
 
 ## Admin API
 
