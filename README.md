@@ -33,6 +33,15 @@ administrators; it does not provide user accounts, individual access control,
 rate limiting, or audit logging. Use HTTPS and a secure authentication
 solution before production deployment.
 
+For local development only, the frontend also has an admin interface at
+`http://127.0.0.1:3000/admin`. In the frontend terminal, set
+`$env:ADMIN_LOCAL_ENABLED = "true"` and set `$env:ADMIN_API_TOKEN` to the same
+token used by the backend before starting Next.js. Keep both services bound to
+localhost. The token stays on the server after sign-in; the browser receives
+an HttpOnly session cookie that expires after eight hours. Do not enable this
+local interface on a public server: it has no account-level authorization,
+rate limiting, audit logging, or production-ready session management.
+
 - `GET /api/v1/admin/products` and `GET /api/v1/admin/products/{id}` include
   inactive products.
 - `POST /api/v1/admin/products` creates a product; `PUT /api/v1/admin/products/{id}`

@@ -803,13 +803,40 @@ button:focus-visible {
   font-size: 14px;
 }
 
-.order-form input {
+.order-form input,
+.order-form select,
+.order-form textarea {
   width: 100%;
   min-height: 44px;
   border: 1px solid #aaa99b;
   padding: 10px;
   background: var(--paper-light);
   color: var(--ink);
+}
+
+.order-form textarea {
+  min-height: 100px;
+  resize: vertical;
+  font: inherit;
+}
+
+.admin-page section {
+  margin-top: 40px;
+}
+
+.admin-row {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 18px 0;
+  border-bottom: 1px solid #d8d5ca;
+  overflow-wrap: anywhere;
+  font-size: 13px;
+}
+
+.admin-row button {
+  margin-right: 16px;
 }
 
 .order-form input.order-checkbox {
