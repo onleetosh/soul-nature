@@ -793,6 +793,57 @@ button:focus-visible {
   font-size: 13px;
 }
 
+.order-form {
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  margin: 30px 0;
+  font-size: 14px;
+}
+
+.order-form input {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid #aaa99b;
+  padding: 10px;
+  background: var(--paper-light);
+  color: var(--ink);
+}
+
+.order-form input.order-checkbox {
+  width: auto;
+  min-height: auto;
+  margin-right: 6px;
+}
+
+.order-summary {
+  max-width: 600px;
+  margin: 30px 0;
+  padding: 20px;
+  background: var(--paper-light);
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+.order-summary ul {
+  padding: 0;
+  list-style: none;
+}
+
+.order-summary li,
+.order-total {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 8px 0;
+}
+
+.order-total {
+  border-top: 1px solid #d8d5ca;
+}
+
 @media (max-width: 620px) {
   .shop {
     padding-top: 45px;

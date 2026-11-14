@@ -10,9 +10,9 @@ personal-care, fragrance, and wellness products.
 
 The backend provides health, category, product, and order endpoints. The
 storefront includes a catalog, category filters, and product detail pages backed
-by the API. Guests can add items to a cart saved in browser localStorage;
-checkout pages are not yet implemented. Cart prices and stock are refreshed
-from the API when viewing the cart, and are not reserved.
+by the API. Guests can add items to a cart saved in browser localStorage and
+create a pending order for Stripe test checkout. Cart prices and stock are
+refreshed from the API when viewing the cart, and are not reserved.
 
 ## Admin API
 
@@ -55,11 +55,14 @@ $env:STRIPE_SUCCESS_URL = "http://localhost:3000/success"
 $env:STRIPE_CANCEL_URL = "http://localhost:3000/cart"
 ```
 
-Only test secret keys are accepted. Set the URLs to actual frontend routes when
-the checkout UI exists; the frontend does not provide them yet. A
-checkout session is reused for retries. If it expires, the customer must create
-a new order; an interrupted session creation may require manual reconciliation
-after 23 hours to avoid accidentally charging twice.
+Only test secret keys are accepted. The customer reviews the server-priced
+pending order before proceeding to Stripe. The order number and email are
+retained in the current browser tab's session storage for checkout retries and
+the success page; record the order number to look it up later at `/orders`.
+The cart is not automatically cleared after payment. A checkout session is
+reused for retries. If it expires, the customer must create a new order; an
+interrupted session creation may require manual reconciliation after 23 hours
+to avoid accidentally charging twice.
 
 Forward Stripe test events to `POST /api/v1/webhooks/stripe`, for example with
 the Stripe CLI:

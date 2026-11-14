@@ -103,7 +103,8 @@ export default function CartPage() {
           ) : (
             <p className="cart-subtotal">Subtotal <strong>{formatPrice(subtotal)}</strong></p>
           )}
-          <p className="shop-intro">Checkout is coming soon. Prices and availability can change.</p>
+          <p className="shop-intro">Prices and availability can change. Items are not reserved.</p>
+          {!hasUnavailable && <p><Link className="button button-dark" href="/checkout">Proceed to checkout</Link></p>}
           <Link className="text-link" href="/shop">Continue shopping</Link>
         </>
       )}

@@ -36,6 +36,7 @@ export function SiteHeader() {
           onClick={() => setOpen(false)}
         >
           <a href="/shop">Shop</a>
+          <a href="/orders">Order status</a>
           <a href="/#story">Our story</a>
           <a href="/#promise">Our promise</a>
         </nav>
